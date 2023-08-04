@@ -1,0 +1,102 @@
+version: "3.1"
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  broker:
+    image: wurstmeister/kafka
+    container_name: broker
+    ports:
+      - '9092:9092'
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://broker:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+  discovery-service:
+    image: javenockdocker/discovery-service
+    container_name: discovery-server
+    pull_policy: always
+    ports:
+      - '8761:8761'
+    restart: always
+  gateway:
+    image: javenockdocker/gateway-service
+    container_name: gateway
+    pull_policy: always
+    ports:
+      - "8085:8085"
+    depends_on:
+      - discovery-service
+    environment:
+      - eureka.client.service-url.defaultZone=http://discovery-service:8761/eureka
+  patient:
+    image: javenockdocker/patient-service
+    container_name: patient-service
+    pull_policy: always
+    ports:
+      - "8086:8086"
+    depends_on:
+      - discovery-service
+    environment:
+      - eureka.client.service-url.defaultZone=http://discovery-service:8761/eureka
+  room:
+    image: javenockdocker/room-service
+    container_name: room-service
+    pull_policy: always
+    ports:
+      - "8088:8088"
+    depends_on:
+      - discovery-service
+    environment:
+      - eureka.client.service-url.defaultZone=http://discovery-service:8761/eureka
+      - gateway
+  laboratory:
+    image: javenockdocker/laboratory-service
+    container_name: laboratory-service
+    pull_policy: always
+    ports:
+      - "8089:8089"
+    depends_on:
+      - discovery-service
+    environment:
+      - eureka.client.service-url.defaultZone=http://discovery-service:8761/eureka
+  jwtsecurity:
+    image: javenockdocker/jwt-auth-service
+    container_name: jwt-service
+    pull_policy: always
+    ports:
+      - "8091:8091"
+    depends_on:
+      - discovery-service
+    environment:
+      - eureka.client.service-url.defaultZone=http://discovery-service:8761/eureka
+  inpatient:
+    image: javenockdocker/inpatient-service
+    container_name: inpatient-service
+    pull_policy: always
+    ports:
+      - "8087:8087"
+    depends_on:
+      - discovery-service
+    environment:
+      - eureka.client.service-url.defaultZone=http://discovery-service:8761/eureka
+  bill:
+    image: javenockdocker/bill-service
+    container_name: bill-service
+    pull_policy: always
+    ports:
+      - "8090:8090"
+    depends_on:
+      - discovery-service
+      - broker
+    environment:
+      - eureka.client.service-url.defaultZone=http://discovery-service:8761/eureka

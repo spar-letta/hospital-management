@@ -1,0 +1,47 @@
+server:
+  port: 8085
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+
+spring:
+  application:
+    name: GATEWAY-SERVICE
+  cloud:
+    gateway:
+      routes:
+        - id: patient-service
+          uri: lb://PATIENT-SERVICE
+          predicates:
+            - Path=/patient/**
+          filters:
+            - AuthenticationFilter
+        - id: inpatient-service
+          uri: lb://INPATIENT-SERVICE
+          predicates:
+            - Path=/in-patient/**
+          filters:
+            - AuthenticationFilter
+        - id: room-service
+          uri: lb://ROOM-SERVICE
+          predicates:
+            - Path=/room/**
+          filters:
+            - AuthenticationFilter
+        - id: laboratory-service
+          uri: lb://LABORATORY-SERVICE
+          predicates:
+            - Path=/laboratory/**
+          filters:
+            - AuthenticationFilter
+        - id: bill-service
+          uri: lb://BILL-SERVICE
+          predicates:
+            - Path=/bill/**
+          filters:
+            - AuthenticationFilter
+        - id: jwt-auth-service
+          uri: lb://LOGIN-SERVICE
+          predicates:
+            - Path=/auth/**
