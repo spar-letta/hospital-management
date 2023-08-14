@@ -2,28 +2,21 @@ package com.javenock.inpatientservice;
 
 import com.javenock.inpatientservice.model.Inpatient;
 import com.javenock.inpatientservice.repository.InpatientRepository;
-import com.javenock.inpatientservice.request.BillDoctorChargeReq;
 import com.javenock.inpatientservice.request.BillDoctorChargeRequest;
 import com.javenock.inpatientservice.request.InpatientRequest;
 import com.javenock.inpatientservice.response.PatientResponse;
-import com.javenock.inpatientservice.response.RoomResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class InpatientServiceApplicationTests {
@@ -50,7 +43,7 @@ class InpatientServiceApplicationTests {
 
 	@Test
 	public void createInpatientRecord(){
-		BillDoctorChargeReq billDoctorChargeReq = BillDoctorChargeReq.builder()
+		BillDoctorChargeRequest billDoctorChargeReq = BillDoctorChargeRequest.builder()
 				.patientId(1L)
 				.doctor_charge(Double.parseDouble("200.0"))
 				.admissionData("2022-01-02")
