@@ -32,7 +32,7 @@ public class InpatientService {
     //@Transactional
     public Inpatient createInpatientRecord(InpatientRequest inpatientRequest) throws NoRecoredsFoundException {
         try{
-            ResponseEntity<PatientResponse> entity = restTemplate.getForEntity("http://PATIENT-SERVICE/patient/{patientId}", PatientResponse.class, inpatientRequest.getPatientId());
+            Long entity = restTemplate.getForEntity("http://PATIENT-SERVICE/patient/{patientId}", PatientResponse.class, inpatientRequest.getPatientId()).getBody().getPatientId();
             ResponseEntity<RoomResponse> roomDetails = restTemplate.getForEntity("http://ROOM-SERVICE/room/{roomNumber}", RoomResponse.class, inpatientRequest.getRoomNumber());
             Inpatient new_record = Inpatient.builder()
                     .admissionDate(LocalDate.parse(inpatientRequest.getAdmissionDate()))
@@ -40,7 +40,7 @@ public class InpatientService {
                     .disease(inpatientRequest.getDisease())
                     .doctorCharge(inpatientRequest.getDoctorCharge())
                     .doctorChargeUpdateBillStatus(updateBillingDoctorCharge(inpatientRequest))
-                    .patientId(entity.getBody().getPatientId())
+                    .patientId(entity)
                     .roomNumber(roomDetails.getBody().getRoomNumber())
                     .build();
             return inpatientRepository.save(new_record);
